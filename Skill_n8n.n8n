@@ -1,0 +1,642 @@
+{
+  "updatedAt": "2026-04-07T10:22:35.431Z",
+  "createdAt": "2026-04-07T07:12:14.230Z",
+  "id": "QnzeRigQUdZLaYxOgKvXo",
+  "name": "TikTok Book Content Factory 📚",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "88142589-6a68-464c-90a4-6d01ee13b33f",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "position": [
+        -736,
+        304
+      ],
+      "webhookId": "3611645b-0df7-4c25-8d3b-f4abb9b01fb7",
+      "typeVersion": 1.4
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('When chat message received').item.json.chatInput }}",
+        "options": {
+          "systemMessage": "=Bạn là AI Content Assistant chuyên tạo full content pack bán sách TikTok cho creator Việt Nam.\n\n## Persona & Brand Voice\n- Output: Tiếng Việt tự nhiên, gần gũi, truyền cảm hứng\n- Tone: Như người bạn chia sẻ cuốn sách hay\n- Target market: TikTok Việt Nam, người dùng 18-40 tuổi\n\n## Khi User Chưa Nhập Đủ Thông Tin\nHỏi ngay (nếu thiếu bất kỳ thông tin nào):\n1. Tên sách là gì?\n2. Thể loại sách (self-help, tài chính, tâm lý, kinh doanh...)?\n3. Target audience: ai là người xem chính? (tuổi, nghề nghiệp, hoàn cảnh)\n4. Core promise: đọc xong sách được GÌ CỤ THỂ?\n5. Điểm độc đáo so với sách cùng thể loại?\n6. Tone video mong muốn (gần gũi / mạnh mẽ / nghiêm túc / vui vẻ)?\n7. Mục tiêu video (bán hàng / tăng follow / tăng comment / lead magnet)?\n8. Giá sách (nếu có — để viết CTA chính xác)?\n\n## Khi Đã Có Đủ Thông Tin — Tạo Full Content Pack\n\n**BƯỚC 1: FETCH SKILLS SONG SONG** (gọi concurrent ngay lập tức, KHÔNG tuần tự)\n\nGọi Get Skill File tool ĐỒNG THỜI với các URLs sau:\n- https://raw.githubusercontent.com/Duyquangit666888kk/n8n-content-creator-skills/main/tiktok/hook-generator/SKILL.md\n- https://raw.githubusercontent.com/Duyquangit666888kk/n8n-content-creator-skills/main/tiktok/caption-writer/SKILL.md\n- https://raw.githubusercontent.com/Duyquangit666888kk/n8n-content-creator-skills/main/tiktok/hashtag-researcher/SKILL.md\n- https://raw.githubusercontent.com/Duyquangit666888kk/n8n-content-creator-skills/main/books/blurb-writer/SKILL.md\n- https://raw.githubusercontent.com/Duyquangit666888kk/n8n-content-creator-skills/main/seo/keyword-analyzer/SKILL.md\n\n**BƯỚC 2: FOLLOW INSTRUCTIONS** trong từng SKILL.md đã đọc được\n\n**BƯỚC 3: OUTPUT** theo format bắt buộc dưới đây:\n\n══════════════════════════════════════════\n# 🎬 CONTENT PACK: [TÊN SÁCH]\n══════════════════════════════════════════\n\n## 📌 PHẦN 1: HOOKS (5 Options)\n[Output đầy đủ từ hook-generator skill]\n[5 hooks — ít nhất 2 loại khác nhau — kèm label và lý do]\n[Cuối cùng: Khuyến nghị option nào và tại sao]\n\n---\n\n## 🎬 PHẦN 2: SCRIPT TIKTOK 60 GIÂY\n[Script hoàn chỉnh — mỗi phần có timestamp [0s-Xs]]\n[Stage directions viết trong ngoặc đơn: (nhìn camera), (cầm sách...)]\n[Dùng hook tốt nhất từ Phần 1 làm mở đầu]\n[Structure: HOOK → SETUP → LESSON/VALUE → APPLY → CTA]\n[Cuối script: Gợi ý mood nhạc nền]\n\n---\n\n## 📝 PHẦN 3: CAPTION + HASHTAGS\n[Caption đầy đủ từ caption-writer skill]\n[Hook line đặt TRƯỚC \"xem thêm\" + value bullets + CTA rõ ràng]\n---\n[Bộ Hashtag CHÍNH — 12-15 tags theo ratio broad/mid/niche]\n[Bộ Hashtag ALTERNATIVE — để rotation sau 3-5 video]\n\n---\n\n## 📚 PHẦN 4: BLURBS\n### Short Blurb (30-50 từ) — Bio / Linktree:\n[...]\n### Medium Blurb (100-150 từ) — Caption / Email:\n[...]\n### Long Blurb (250-300 từ) — Shopee / Landing page:\n[...]\n\n---\n\n## 🔑 PHẦN 5: TOP 10 KEYWORDS SEO\n[Keywords từ keyword-analyzer skill + phân loại Intent]\n\n---\n\n## 📣 PHẦN 6: CTA VARIATIONS (5 Options)\n[5 CTAs phù hợp với mục tiêu video đã chọn]\n[Label rõ: CTA trong video / trong caption / trong comment ghim]\n\n══════════════════════════════════════════\n\n## Available Skills Files and Directories\n{{ \nJSON.stringify(\n  $('Merge Directory Structures')\n    .all()\n    .map(item => ({\n      \"type\": item.json.type,\n      \"path\": item.json.path,\n      \"orgName\": item.json.url.split('/')[4],\n      \"repoName\": item.json.url.split('/')[5],\n    }))\n    .filter(i => \n      i.path.toLowerCase().split('/').last() !== \"readme.md\" && \n      i.path.toLowerCase().split('/').last() !== \"template\" &&\n      i.path.toLowerCase().split('/').last() !== \"license\"\n    ),\n  null,\n  2\n) \n}}\n\n## CRITICAL RULES\n- FETCH skill files TRƯỚC khi viết bất cứ thứ gì — không tự bịa\n- KHÔNG dùng general knowledge — instructions sống trong skill files\n- Fetch SONG SONG (concurrent) — không fetch tuần tự từng cái một\n- Output bằng TIẾNG VIỆT tự nhiên\n- Content phải SPECIFIC cho cuốn sách đã input — không generic\n- Nếu thiếu thông tin quan trọng → hỏi trước, tạo content sau",
+          "maxIterations": 150
+        }
+      },
+      "id": "6e138569-34db-4172-bd65-f6d940dd6fd3",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        768,
+        304
+      ],
+      "executeOnce": true,
+      "typeVersion": 3.1
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "list",
+        "owner": {
+          "__rl": true,
+          "mode": "url",
+          "value": "={{ $json.SKILLS_REPOS }}"
+        },
+        "repository": {
+          "__rl": true,
+          "mode": "url",
+          "value": "={{ $json.SKILLS_REPOS }}"
+        },
+        "filePath": "/"
+      },
+      "id": "88f00208-8624-4ef0-83da-b4de3b8b5782",
+      "name": "List Root Dirs",
+      "type": "n8n-nodes-base.github",
+      "position": [
+        96,
+        224
+      ],
+      "webhookId": "4ec37c56-9985-42e6-baf5-fe4ac627182b",
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8955dd58-72aa-49a9-a6aa-7c1679ee5b51",
+              "name": "SKILLS_REPOS",
+              "type": "array",
+              "value": "=[\n  \"https://github.com/anthropics/skills\",\n  \"https://github.com/Duyquangit666888kk/n8n-content-creator-skills\"\n]"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a5a44130-42cf-4183-ad4a-a22bb05bd84a",
+      "name": "Set GitHub Repo URLs",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -384,
+        304
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "SKILLS_REPOS",
+        "options": {}
+      },
+      "id": "feb926c3-999a-4d2b-80c9-a160621790ab",
+      "name": "Split Out",
+      "type": "n8n-nodes-base.splitOut",
+      "position": [
+        -96,
+        304
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "HTTP request is used here instead of the built in GitHub node because the node returns base 64, but in the HTTP node we can request it as a text file through headers",
+        "height": 288,
+        "color": 7
+      },
+      "id": "3892f48a-ae69-495e-b47b-c57f9a62d789",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1312,
+        688
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "This lets the agent look through the directories to find relevant files",
+        "height": 272,
+        "width": 192,
+        "color": 7
+      },
+      "id": "5167cb02-02f2-49c6-8ffd-4c06df06e4cc",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1088,
+        704
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {},
+      "id": "ffe05e00-b0e8-4156-8263-2f94a946d9b5",
+      "name": "Simple Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "position": [
+        960,
+        688
+      ],
+      "typeVersion": 1.3
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-3-flash-preview",
+        "options": {
+          "temperature": 0.7,
+          "maxTokens": 8000
+        }
+      },
+      "id": "e73a780e-e020-4e71-bea1-2b8cbef43e23",
+      "name": "Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "position": [
+        752,
+        688
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "list",
+        "owner": {
+          "__rl": true,
+          "mode": "url",
+          "value": "={{ $json.SKILLS_REPOS }}"
+        },
+        "repository": {
+          "__rl": true,
+          "mode": "url",
+          "value": "={{ $json.SKILLS_REPOS }}"
+        },
+        "filePath": "/skills"
+      },
+      "id": "63ef85a7-9fb0-41a0-a3df-4d8bc40f5e4a",
+      "name": "List Skills Dirs",
+      "type": "n8n-nodes-base.github",
+      "position": [
+        96,
+        384
+      ],
+      "webhookId": "4ec37c56-9985-42e6-baf5-fe4ac627182b",
+      "typeVersion": 1.1,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 3,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "275c05ea-cde6-4b6a-9916-afe5cda498d9",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              },
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "skills"
+            },
+            {
+              "id": "50420e00-4d14-44ff-8c86-389fac249fa6",
+              "operator": {
+                "type": "string",
+                "operation": "notStartsWith"
+              },
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3b8e24cf-09f3-49e1-8d93-9ab07c063381",
+      "name": "Remove Skills Dirs & Dot Files",
+      "type": "n8n-nodes-base.filter",
+      "position": [
+        272,
+        224
+      ],
+      "typeVersion": 2.3
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 3,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "275c05ea-cde6-4b6a-9916-afe5cda498d9",
+              "operator": {
+                "type": "string",
+                "operation": "notExists",
+                "singleValue": true
+              },
+              "leftValue": "={{ $json.error }}",
+              "rightValue": ""
+            },
+            {
+              "id": "b07c5b48-668a-4ca2-9ba2-b84509d8f93d",
+              "operator": {
+                "type": "string",
+                "operation": "notStartsWith"
+              },
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c3ffa340-a3de-4e6a-9a07-0bfb342863da",
+      "name": "Remove Errors and Dot Files",
+      "type": "n8n-nodes-base.filter",
+      "position": [
+        272,
+        384
+      ],
+      "typeVersion": 2.3
+    },
+    {
+      "parameters": {
+        "content": "## 💬 Cách Sử Dụng\nNhập thông tin sách vào chat. Ví dụ:\n\n\"Tạo content pack cho sách **Đắc Nhân Tâm** của Dale Carnegie. Thể loại: self-help. Target: dân văn phòng 25-35 tuổi. Core promise: biết cách gây thiện cảm và thuyết phục bất kỳ ai. Tone: gần gũi. Mục tiêu: bán sách. Giá: 89.000đ\"\n\nAI sẽ tự động:\n1. Load skills từ GitHub\n2. Tạo 5 Hooks\n3. Viết Script 60s\n4. Viết Caption + 2 bộ Hashtag\n5. Viết Blurb (Short/Medium/Long)\n6. Top 10 Keywords SEO\n7. 5 CTA variations",
+        "height": 400,
+        "color": 7
+      },
+      "id": "8644a190-5100-498c-a6fe-c568fcdfbdbf",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -800,
+        128
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## ⚙️ Skills Repos\nFlow kéo skills SONG SONG từ 2 repos:\n\n📦 **Public** (Anthropic):\n`anthropics/skills`\n\n🔒 **Private** (Repo của bạn):\n`Duyquangit666888kk/n8n-content-creator-skills`\n\n**5 Skills đang dùng:**\n- `tiktok/hook-generator`\n- `tiktok/caption-writer`\n- `tiktok/hashtag-researcher`\n- `books/blurb-writer`\n- `seo/keyword-analyzer`\n\nĐể thêm repo → update node\n**Set GitHub Repo URLs**",
+        "height": 448,
+        "width": 256,
+        "color": 3
+      },
+      "id": "0d336067-ac6d-40af-9efc-f0cedeb506ef",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -464,
+        32
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## 🤖 Content Creator Agent\n\n**Input:** Thông tin sách từ chat\n\n**Process:**\n1. Load skill directory map từ GitHub\n2. Fetch 5 SKILL.md ĐỒNG THỜI (concurrent)\n3. Follow instructions trong từng skill\n\n**Output — Full Content Pack:**\n- 📌 5 Hook options\n- 🎬 Script TikTok 60 giây\n- 📝 Caption + 2 bộ Hashtag\n- 📚 Blurb (Short/Medium/Long)\n- 🔑 Top 10 Keywords SEO\n- 📣 5 CTA variations\n\n**Temperature: 0.7** | **maxIterations: 150**",
+        "height": 272,
+        "width": 384,
+        "color": 7
+      },
+      "id": "fd78f8bd-be42-4247-ae01-36a70809a422",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        704,
+        176
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## 🛠️ Agent Tools\n\n**List Files by Path Name**\n→ Agent khám phá cấu trúc skills repo\n\n**Get a File From GitHub**\n→ HTTP Request lấy plain text (không phải GitHub node\n  vì GitHub node trả base64 — tốn token)\n→ Configured với Header Auth cho private repo\n\n**⚙️ Cần setup credential:**\n- Type: Header Auth\n- Name field: `Authorization`\n- Value: `token YOUR_GITHUB_PAT`",
+        "height": 464,
+        "width": 464,
+        "color": 7
+      },
+      "id": "c10244fc-86fd-409a-a0d0-2956d7c23b13",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1088,
+        512
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "List the files and directories inside of dirs.\nUse this tool on any DIR to see the files and other directories inside of it",
+        "resource": "file",
+        "operation": "list",
+        "owner": {
+          "__rl": true,
+          "mode": "name",
+          "value": "={{ $fromAI('repoUsername') }}"
+        },
+        "repository": {
+          "__rl": true,
+          "mode": "name",
+          "value": "={{ $fromAI('repoName') }}"
+        },
+        "filePath": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Path', \"`/` would be root, `/folder` would list files in the folder named folder\", 'string') }}"
+      },
+      "id": "dead271b-ab72-4f43-97a4-5c175102e793",
+      "name": "List Files by Path Name",
+      "type": "n8n-nodes-base.githubTool",
+      "position": [
+        1152,
+        816
+      ],
+      "webhookId": "b309da8c-2f65-4c37-bb15-7c8a88c482ba",
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Fetch the raw text content of a skill file from GitHub. Use this to read the contents of a SKILL.md file. Provide the full raw URL of the file.",
+        "method": "GET",
+        "url": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('url', 'The full GitHub raw content URL of the skill file to fetch. Format: https://raw.githubusercontent.com/{owner}/{repo}/main/{path}', 'string') }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "id": "ed2563ed-88fa-4fe9-b56a-d448223f5971",
+      "name": "Get a File From GitHub",
+      "type": "n8n-nodes-base.httpRequestTool",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "github-token-auth",
+          "name": "GitHub Token Auth"
+        }
+      },
+      "position": [
+        1392,
+        832
+      ],
+      "typeVersion": 4.4
+    },
+    {
+      "parameters": {
+        "content": "## Fetch & Prepare Skills for Agent\nThis:\n1. Gets the directory from the GitHub Repository\n2. Removes duplicates & irrelevant files to save context\n3. Gets nested `/skills` directory if it exists\n4. Merge all data together to prepare for use in the Agent node's system prompt\n",
+        "height": 528,
+        "width": 736,
+        "color": 7
+      },
+      "id": "fc7a6405-8e99-47d0-89ce-b25e474098bd",
+      "name": "Sticky Note6",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -128,
+        32
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {},
+      "id": "43fca12e-d89e-442c-9cf0-32873aef6ccd",
+      "name": "Merge Directory Structures",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        480,
+        304
+      ],
+      "typeVersion": 3.2
+    },
+    {
+      "parameters": {
+        "content": "## Replace Me\nIf you want, replace me with the provider and model you prefer!\n\nMaybe pick one out on our [AI Benchmark](https://n8n.io/ai-benchmark)",
+        "height": 320,
+        "width": 224
+      },
+      "id": "75b53cbd-6fcd-4fb3-8b2e-6d5641dc68a3",
+      "name": "Sticky Note7",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        672,
+        496
+      ],
+      "typeVersion": 1
+    }
+  ],
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Set GitHub Repo URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List Root Dirs": {
+      "main": [
+        [
+          {
+            "node": "Remove Skills Dirs & Dot Files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set GitHub Repo URLs": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "List Root Dirs",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "List Skills Dirs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List Skills Dirs": {
+      "main": [
+        [
+          {
+            "node": "Remove Errors and Dot Files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Skills Dirs & Dot Files": {
+      "main": [
+        [
+          {
+            "node": "Merge Directory Structures",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Errors and Dot Files": {
+      "main": [
+        [
+          {
+            "node": "Merge Directory Structures",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "List Files by Path Name": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Directory Structures": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "0e4807f5-d499-49b7-a7e2-0c068472cf0e",
+  "activeVersionId": null,
+  "versionCounter": 4,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-04-07T07:12:14.233Z",
+      "createdAt": "2026-04-07T07:12:14.233Z",
+      "role": "workflow:owner",
+      "workflowId": "QnzeRigQUdZLaYxOgKvXo",
+      "projectId": "OLPK678A45L7Y7NU",
+      "project": {
+        "updatedAt": "2026-03-02T02:12:49.000Z",
+        "createdAt": "2026-03-02T02:12:19.368Z",
+        "id": "OLPK678A45L7Y7NU",
+        "name": "Duy Quang <vincent.dev202@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "90d43c41-c6fc-4439-84a1-27f011f0061c",
+        "projectRelations": [
+          {
+            "updatedAt": "2026-03-02T02:12:19.368Z",
+            "createdAt": "2026-03-02T02:12:19.368Z",
+            "userId": "90d43c41-c6fc-4439-84a1-27f011f0061c",
+            "projectId": "OLPK678A45L7Y7NU",
+            "user": {
+              "updatedAt": "2026-04-06T23:48:47.000Z",
+              "createdAt": "2026-03-02T02:12:19.151Z",
+              "id": "90d43c41-c6fc-4439-84a1-27f011f0061c",
+              "email": "vincent.dev202@gmail.com",
+              "firstName": "Duy",
+              "lastName": "Quang",
+              "personalizationAnswers": {
+                "version": "v4",
+                "personalization_survey_submitted_at": "2026-03-02T02:13:28.800Z",
+                "personalization_survey_n8n_version": "2.4.6",
+                "companySize": "<20",
+                "companyType": "ecommerce",
+                "automationGoalSm": [],
+                "role": "sales-and-marketing",
+                "reportedSource": "youtube"
+              },
+              "settings": {
+                "userActivated": true,
+                "firstSuccessfulWorkflowId": "-XcHvFXHo0OSkXjI7BLud",
+                "userActivatedAt": 1772423600016,
+                "easyAIWorkflowOnboarded": true,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1772697152166
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-04-07",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}
